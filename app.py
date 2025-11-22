@@ -1,19 +1,17 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import streamlit.components.v1 as components
+import streamlit.components.v1 as components 
 
 # ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="ระบบติดตามเป้าหมายการขาย & Workflow", layout="wide")
 
 # --- ข้อมูลเริ่มต้นของสินค้า (Default Product Data) ---
-# เป้าขายรวม: 250 + 150 + 100 + 109 = 609 (หน่วย: ล้านบาท)
-# ขายได้แล้วรวม: 100 + 50 + 20 + 50 = 220 (หน่วย: ล้านบาท)
 DEFAULT_PRODUCTS_DATA = pd.DataFrame([
-    {"สินค้า": "ปูน", "เป้าขาย": 250, "สต็อกปัจจุบัน": 300, "ขายได้แล้ว": 100},
-    {"สินค้า": "สี", "เป้าขาย": 150, "สต็อกปัจจุบัน": 50, "ขายได้แล้ว": 50},
-    {"สินค้า": "เคมีภัณฑ์", "เป้าขาย": 100, "สต็อกปัจจุบัน": 250, "ขายได้แล้ว": 20},
-    {"สินค้า": "ไม่สังเคราะห์", "เป้าขาย": 109, "สต็อกปัจจุบัน": 100, "ขายได้แล้ว": 50},
+    {"สินค้า": "ปูน", "เป้าขาย": 500, "สต็อกปัจจุบัน": 300, "ขายได้แล้ว": 150},
+    {"สินค้า": "สี", "เป้าขาย": 300, "สต็อกปัจจุบัน": 50, "ขายได้แล้ว": 40},
+    {"สินค้า": "เคมีภัณฑ์", "เป้าขาย": 200, "สต็อกปัจจุบัน": 250, "ขายได้แล้ว": 10},
+    {"สินค้า": "ไม่สังเคราะห์", "เป้าขาย": 400, "สต็อกปัจจุบัน": 100, "ขายได้แล้ว": 20},
 ])
 
 # --- ข้อมูลเริ่มต้นของงาน (Default Task Data) ---
@@ -37,7 +35,8 @@ if 'products' not in st.session_state:
 
 # --- 2. ส่วนแสดงผล (Sidebar Menu) ---
 st.sidebar.title("🏢 เมนูหลัก")
-menu = st.sidebar.radio("เลือกหน้าจอ", ["📊 Dashboard ภาพรวม", "✅ ติดตามงาน (Workflow)", "📦 สต็อก & ยอดขาย", "🗺️ Map Sales"]) 
+# ***แก้ไขชื่อเมนูเป็น ToDo Checklist***
+menu = st.sidebar.radio("เลือกหน้าจอ", ["📊 Dashboard ภาพรวม", "✅ ToDo Checklist", "📦 สต็อก & ยอดขาย", "🗺️ Map Sales"]) 
 
 # --- 3. หน้าจอ Dashboard ---
 if menu == "📊 Dashboard ภาพรวม":
@@ -52,9 +51,8 @@ if menu == "📊 Dashboard ภาพรวม":
 
     # แสดง Metrics
     col1, col2, col3 = st.columns(3)
-    # แสดงผลตามค่าที่ผู้ใช้ร้องขอ: 609 ล้าน และ 220 ล้าน
-    col1.metric("เป้าหมายรวม (ล้านบาท)", f"฿{total_target:,}m")
-    col2.metric("ขายได้แล้ว (ล้านบาท)", f"฿{total_sold:,}m")
+    col1.metric("เป้าหมายรวม (บาท)", f"฿{total_target:,}")
+    col2.metric("ขายได้แล้ว (บาท)", f"฿{total_sold:,}")
     col3.metric("ความสำเร็จ (%)", f"{progress:.2f}%")
     
     st.progress(progress / 100)
@@ -67,8 +65,9 @@ if menu == "📊 Dashboard ภาพรวม":
     st.plotly_chart(fig, use_container_width=True)
 
 # --- 4. หน้าจอติดตามงาน (Workflow) ---
-elif menu == "✅ ติดตามงาน (Workflow)":
-    st.title("✅ รายการสิ่งที่ต้องทำ (To-Do List)")
+# ***แก้ไขเงื่อนไขเป็น ToDo Checklist***
+elif menu == "✅ ToDo Checklist":
+    st.title("✅ ToDo Checklist")
     st.info("💡 สามารถแก้ไขข้อมูลในตารางได้โดยตรง (ดับเบิ้ลคลิก)")
     
     # --- ส่วนที่ 4.1: แบบฟอร์มเพิ่มงาน ---
@@ -170,7 +169,7 @@ elif menu == "📦 สต็อก & ยอดขาย":
     edited_inv = st.data_editor(
         df_inventory,
         column_config={
-            "เป้าขาย": st.column_config.NumberColumn("เป้าหมาย (ล้านบาท)"),
+            "เป้าขาย": st.column_config.NumberColumn("เป้าหมาย (บาท)"),
             "สต็อกปัจจุบัน": st.column_config.NumberColumn("รับของเข้า (ชิ้น)"),
             "ขายได้แล้ว": st.column_config.NumberColumn("ขายออก (ชิ้น)"),
             "คงเหลือจริง": st.column_config.NumberColumn("พร้อมขาย (ชิ้น)", disabled=True),
@@ -186,7 +185,7 @@ elif menu == "📦 สต็อก & ยอดขาย":
 elif menu == "🗺️ Map Sales":
     st.title("🗺️ แผนที่การขาย (Sales Map)")
     
-    st.warning("⚠️ แผนที่นี้แสดงผลผ่านการฝังลิงก์ (iframe) อาจต้องมีการตั้งค่าลิงก์ Google Maps ให้ถูกต้องเพื่อให้แสดงผลได้สมบูรณ์")
+    st.warning("🗺️ แผนที่นี้แสดงผลผ่าน Google Maps ได้สมบูรณ์")
 
     # ฝังโค้ด iframe ด้วย st.components.v1.html
     components.html(
