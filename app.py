@@ -1,17 +1,19 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import streamlit.components.v1 as components # ***เพิ่มบรรทัดนี้***
+import streamlit.components.v1 as components
 
 # ตั้งค่าหน้าเว็บ
 st.set_page_config(page_title="ระบบติดตามเป้าหมายการขาย & Workflow", layout="wide")
 
 # --- ข้อมูลเริ่มต้นของสินค้า (Default Product Data) ---
+# เป้าขายรวม: 250 + 150 + 100 + 109 = 609 (หน่วย: ล้านบาท)
+# ขายได้แล้วรวม: 100 + 50 + 20 + 50 = 220 (หน่วย: ล้านบาท)
 DEFAULT_PRODUCTS_DATA = pd.DataFrame([
-    {"สินค้า": "ปูน", "เป้าขาย": 500, "สต็อกปัจจุบัน": 300, "ขายได้แล้ว": 150},
-    {"สินค้า": "สี", "เป้าขาย": 300, "สต็อกปัจจุบัน": 50, "ขายได้แล้ว": 40},
-    {"สินค้า": "เคมีภัณฑ์", "เป้าขาย": 200, "สต็อกปัจจุบัน": 250, "ขายได้แล้ว": 10},
-    {"สินค้า": "ไม่สังเคราะห์", "เป้าขาย": 400, "สต็อกปัจจุบัน": 100, "ขายได้แล้ว": 20},
+    {"สินค้า": "ปูน", "เป้าขาย": 250, "สต็อกปัจจุบัน": 300, "ขายได้แล้ว": 100},
+    {"สินค้า": "สี", "เป้าขาย": 150, "สต็อกปัจจุบัน": 50, "ขายได้แล้ว": 50},
+    {"สินค้า": "เคมีภัณฑ์", "เป้าขาย": 100, "สต็อกปัจจุบัน": 250, "ขายได้แล้ว": 20},
+    {"สินค้า": "ไม่สังเคราะห์", "เป้าขาย": 109, "สต็อกปัจจุบัน": 100, "ขายได้แล้ว": 50},
 ])
 
 # --- ข้อมูลเริ่มต้นของงาน (Default Task Data) ---
@@ -35,7 +37,6 @@ if 'products' not in st.session_state:
 
 # --- 2. ส่วนแสดงผล (Sidebar Menu) ---
 st.sidebar.title("🏢 เมนูหลัก")
-# ***อัปเดตเมนูเพิ่ม Map Sales***
 menu = st.sidebar.radio("เลือกหน้าจอ", ["📊 Dashboard ภาพรวม", "✅ ติดตามงาน (Workflow)", "📦 สต็อก & ยอดขาย", "🗺️ Map Sales"]) 
 
 # --- 3. หน้าจอ Dashboard ---
@@ -51,8 +52,9 @@ if menu == "📊 Dashboard ภาพรวม":
 
     # แสดง Metrics
     col1, col2, col3 = st.columns(3)
-    col1.metric("เป้าหมายรวม (บาท)", f"฿{total_target:,}")
-    col2.metric("ขายได้แล้ว (บาท)", f"฿{total_sold:,}")
+    # แสดงผลตามค่าที่ผู้ใช้ร้องขอ: 609 ล้าน และ 220 ล้าน
+    col1.metric("เป้าหมายรวม (ล้านบาท)", f"฿{total_target:,}m")
+    col2.metric("ขายได้แล้ว (ล้านบาท)", f"฿{total_sold:,}m")
     col3.metric("ความสำเร็จ (%)", f"{progress:.2f}%")
     
     st.progress(progress / 100)
@@ -168,7 +170,7 @@ elif menu == "📦 สต็อก & ยอดขาย":
     edited_inv = st.data_editor(
         df_inventory,
         column_config={
-            "เป้าขาย": st.column_config.NumberColumn("เป้าหมาย (บาท)"),
+            "เป้าขาย": st.column_config.NumberColumn("เป้าหมาย (ล้านบาท)"),
             "สต็อกปัจจุบัน": st.column_config.NumberColumn("รับของเข้า (ชิ้น)"),
             "ขายได้แล้ว": st.column_config.NumberColumn("ขายออก (ชิ้น)"),
             "คงเหลือจริง": st.column_config.NumberColumn("พร้อมขาย (ชิ้น)", disabled=True),
