@@ -37,7 +37,8 @@ if 'products' not in st.session_state:
 
 # --- 2. ส่วนแสดงผล (Sidebar Menu) ---
 st.sidebar.title("🏢 เมนูหลัก")
-menu = st.sidebar.radio("เลือกหน้าจอ", ["📊 Dashboard ภาพรวม", "✅ ติดตามงาน (Workflow)", "📦 สต็อก & ยอดขาย", "🗺️ Map Sales"]) 
+# ***แก้ไขตรงนี้: เปลี่ยนชื่อเมนูเป็น Todo Checklist***
+menu = st.sidebar.radio("เลือกหน้าจอ", ["📊 Dashboard ภาพรวม", "✅ Todo Checklist", "📦 สต็อก & ยอดขาย", "🗺️ Map Sales"]) 
 
 # --- 3. หน้าจอ Dashboard ---
 if menu == "📊 Dashboard ภาพรวม":
@@ -67,8 +68,10 @@ if menu == "📊 Dashboard ภาพรวม":
     st.plotly_chart(fig, use_container_width=True)
 
 # --- 4. หน้าจอติดตามงาน (Workflow) ---
-elif menu == "✅ ติดตามงาน (Workflow)":
-    st.title("✅ รายการสิ่งที่ต้องทำ (To-Do List)")
+# ***แก้ไขตรงนี้: เปลี่ยนเงื่อนไขให้ตรงกับชื่อเมนูใหม่***
+elif menu == "✅ Todo Checklist": 
+    # ***แก้ไขตรงนี้: เปลี่ยนชื่อหัวข้อหลักของหน้า***
+    st.title("✅ Todo Checklist")
     st.info("💡 สามารถแก้ไขข้อมูลในตารางได้โดยตรง (ดับเบิ้ลคลิก)")
     
     # --- ส่วนที่ 4.1: แบบฟอร์มเพิ่มงาน ---
